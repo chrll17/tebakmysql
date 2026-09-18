@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tebak Kata - Satu Arah</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#f5f7fa;
+        padding:20px;
+    }
+
+    .container{
+        width:100%;
+        max-width:450px;
+        background:#fff;
+        padding:30px;
+        border-radius:16px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        text-align:center;
+    }
+
+    .direction{
+        color:#666;
+        font-size:14px;
+        margin-bottom:15px;
+        font-weight:bold;
+    }
+
+    .question{
+        font-size:32px;
+        font-weight:bold;
+        margin-bottom:25px;
+        color:#222;
+        word-break:break-word;
+    }
+
+    input{
+        width:100%;
+        padding:14px;
+        border:2px solid #ddd;
+        border-radius:10px;
+        font-size:16px;
+        outline:none;
+        transition:.2s;
+    }
+
+    input:focus{
+        border-color:#3b82f6;
+    }
+
+    button{
+        width:100%;
+        margin-top:12px;
+        padding:14px;
+        border:none;
+        border-radius:10px;
+        background:#3b82f6;
+        color:white;
+        font-size:16px;
+        cursor:pointer;
+        transition:.2s;
+    }
+
+    button:hover{
+        background:#2563eb;
+    }
+
+    .message{
+        min-height:28px;
+        margin-top:15px;
+        font-weight:bold;
+    }
+
+    .correct{ color:#16a34a; }
+    .wrong{ color:#dc2626; }
+    .finished{
+        color:#16a34a;
+        font-size:20px;
+        font-weight:bold;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="direction" id="direction"></div>
+    <div class="question" id="question"></div>
+
+    <input
+        type="text"
+        id="answerInput"
+        placeholder="Ketik jawaban..."
+        autocomplete="off"
+    >
+
+    <button id="checkBtn">Cek</button>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+/*
+====================================================
+DATABASE SOAL
+Tambahkan soal baru di bawah ini.
+Setiap soal hanya akan muncul satu kali.
+====================================================
+*/
+const questions = [
+    { 
+        instruction: "Terjemahkan ke Bahasa Inggris", 
+        question: "Apel", 
+        answer: "apple" 
+    },
+    // CONTOH CARA MENAMBAH SOAL (Silakan hapus tanda // untuk menggunakannya):
+    { question: "mengekstrak data dari basis data", answer: "select" },
+    { question: "memperbarui data dalam basis data", answer: "update" },
+    // { instruction: "Lawan kata dari", question: "Panas", answer: "dingin" }
+];
+
+// Acak urutan pertanyaan
+shuffleArray(questions);
+
+const directionEl = document.getElementById("direction");
+const questionEl = document.getElementById("question");
+const answerInput = document.getElementById("answerInput");
+const messageEl = document.getElementById("message");
+const checkBtn = document.getElementById("checkBtn");
+
+let currentIndex = 0;
+
+function shuffleArray(array){
+    for(let i = array.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function loadQuestion(){
+    if(currentIndex >= questions.length){
+        directionEl.textContent = "";
+        questionEl.innerHTML = '<div class="finished">Semua pertanyaan selesai 🎉</div>';
+        answerInput.style.display = "none";
+        checkBtn.style.display = "none";
+        messageEl.textContent = "";
+        return;
+    }
+
+    const current = questions[currentIndex];
+    directionEl.textContent = current.instruction;
+    questionEl.textContent = current.question;
+    
+    answerInput.value = "";
+    answerInput.focus();
+}
+
+function checkAnswer(){
+    const userAnswer = answerInput.value.trim().toLowerCase();
+    if(userAnswer === "") return;
+
+    const correctAnswer = questions[currentIndex].answer.trim().toLowerCase();
+
+    if(userAnswer === correctAnswer){
+        messageEl.textContent = "✓ Benar";
+        messageEl.className = "message correct";
+        currentIndex++;
+
+        setTimeout(() => {
+            messageEl.textContent = "";
+            loadQuestion();
+        }, 700);
+    } else {
+        messageEl.textContent = "✗ Salah, coba lagi";
+        messageEl.className = "message wrong";
+        answerInput.value = "";
+        answerInput.focus();
+    }
+}
+
+checkBtn.addEventListener("click", checkAnswer);
+answerInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter") checkAnswer();
+});
+
+// Mulai permainan
+loadQuestion();
+</script>
+
+</body>
+</html>
