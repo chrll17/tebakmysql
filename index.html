@@ -135,6 +135,12 @@ const questions = [
     { question: "sintaks memilih kolom nama, umur, dan kota dari tabel 'penjual'", answer: "select nama,umur,kota from penjual" },
     { question: "sintaks memilih nilai unik dari kolom umur & kota di tabel 'penjual'", answer: "select distinct umur,kota from penjual" },
     { question: "sintaks menghitung jumlah nilai unik dari kolom kota di tabel 'penjual'", answer: "select count(distinct kota) from penjual" },
+    { question: "sintaks memilih semua penjual dari kota tuban", answer: "select * from penjual where kota='tuban'" },
+    { question: "sintaks memilih semua penjual yang berumur 21", answer: "select * from penjual where umur=21" },
+    { question: "urutkan penjual yang memiliki umur terendah sampai tertinggi", answer: "select * from penjual order by umur asc" },
+    { question: "urutkan penjual yang memiliki umur tertinggi sampai terendah", answer: "select * from penjual order by umur desc" },
+    { question: "urutkan semua penjual dari terendah sampai tertinggi berdasarkan kolom umur & kota di tabel penjual", answer: "select * from penjual order by umur,kota asc" },
+    { question: "urutkan semua penjual secara menaik berdasarkan kolom umur & menurun berdasarkan kolom kota di tabel penjual", answer: "select * from penjual order by umur asc,kota desc" },
     // { instruction: "Lawan kata dari", question: "Panas", answer: "dingin" }
 ];
 
