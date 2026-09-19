@@ -207,8 +207,7 @@ function checkAnswer(){
     } else {
         messageEl.textContent = "✗ Salah, coba lagi";
         messageEl.className = "message wrong";
-        answerInput.value = "";
-        answerInput.focus();
+        answerInput.select();
     }
 }
 
