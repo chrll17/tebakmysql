@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tebak Kata - Satu Arah</title>
+<title>Tebak Sintaks SQL - Latihan Mandiri</title>
 
 <style>
     *{
         margin:0;
         padding:0;
         box-sizing:border-box;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body{
@@ -18,152 +18,216 @@
         display:flex;
         justify-content:center;
         align-items:center;
-        background:#f5f7fa;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         padding:20px;
     }
 
     .container{
         width:100%;
-        max-width:450px;
+        max-width:550px;
         background:#fff;
-        padding:30px;
-        border-radius:16px;
-        box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        padding:40px 30px;
+        border-radius:20px;
+        box-shadow:0 15px 35px rgba(0,0,0,0.1);
         text-align:center;
     }
 
+    .header-title {
+        color: #2c3e50;
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+
+    .progress-text {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
     .direction{
-        color:#666;
-        font-size:14px;
+        color:#34495e;
+        font-size:16px;
         margin-bottom:15px;
-        font-weight:bold;
+        font-weight:600;
+        background-color: #ecf0f1;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 5px solid #3498db;
     }
 
     .question{
-        font-size:32px;
+        font-size:28px;
         font-weight:bold;
         margin-bottom:25px;
-        color:#222;
+        color:#2c3e50;
         word-break:break-word;
+        display: none; /* Disembunyikan karena dalam konteks ini 'instruction' yang berperan sebagai soal */
     }
 
     input{
         width:100%;
-        padding:14px;
-        border:2px solid #ddd;
-        border-radius:10px;
-        font-size:16px;
+        padding:15px;
+        border:2px solid #bdc3c7;
+        border-radius:12px;
+        font-size:18px;
         outline:none;
-        transition:.2s;
+        transition:all .3s ease;
+        text-align: center;
+        font-family: monospace; /* Font monospace lebih baik untuk koding */
     }
 
     input:focus{
-        border-color:#3b82f6;
+        border-color:#3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
     }
 
     button{
-        width:100%;
-        margin-top:12px;
-        padding:14px;
+        flex: 1;
+        padding:15px;
         border:none;
-        border-radius:10px;
-        background:#3b82f6;
-        color:white;
+        border-radius:12px;
         font-size:16px;
+        font-weight: bold;
         cursor:pointer;
-        transition:.2s;
+        transition:all .2s ease;
     }
 
-    button:hover{
-        background:#2563eb;
+    .btn-check {
+        background:#3498db;
+        color:white;
+    }
+
+    .btn-check:hover{
+        background:#2980b9;
+        transform: translateY(-2px);
+    }
+
+    .btn-hint {
+        background: #f39c12;
+        color: white;
+        flex: 0.4;
+    }
+    
+    .btn-hint:hover {
+        background: #d68910;
     }
 
     .message{
-        min-height:28px;
-        margin-top:15px;
+        min-height:30px;
+        margin-top:20px;
         font-weight:bold;
+        font-size: 18px;
+        padding: 10px;
+        border-radius: 8px;
+        display: none; /* Sembunyikan default */
     }
 
-    .correct{ color:#16a34a; }
-    .wrong{ color:#dc2626; }
+    .correct{ 
+        color:#27ae60; 
+        background-color: #e8f8f5;
+        display: block;
+    }
+    .wrong{ 
+        color:#e74c3c; 
+        background-color: #fdedec;
+        display: block;
+    }
     .finished{
-        color:#16a34a;
-        font-size:20px;
+        color:#27ae60;
+        font-size:24px;
         font-weight:bold;
+        margin-top: 20px;
     }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="direction" id="direction"></div>
+    <h1 class="header-title">Latihan Hafalan SQL</h1>
+    <div class="progress-text" id="progressText">Soal 1 / 30</div>
+    
+    <div class="direction" id="direction">Tuliskan perintah untuk...</div>
     <div class="question" id="question"></div>
 
     <input
         type="text"
         id="answerInput"
-        placeholder="Ketik jawaban..."
+        placeholder="Ketik sintaks SQL di sini..."
         autocomplete="off"
+        spellcheck="false"
     >
 
-    <button id="checkBtn">Cek</button>
+    <div class="btn-group">
+        <button id="hintBtn" class="btn-hint">Bantuan</button>
+        <button id="checkBtn" class="btn-check">Cek Jawaban</button>
+    </div>
     <div class="message" id="message"></div>
 </div>
 
 <script>
 /*
 ====================================================
-DATABASE SOAL
-Tambahkan soal baru di bawah ini.
-Setiap soal hanya akan muncul satu kali.
+DATABASE SOAL SQL (FOKUS CRUD DASAR & KERANGKA SELECT)
 ====================================================
 */
 const questions = [
-    // CONTOH CARA MENAMBAH SOAL (Silakan hapus tanda // untuk menggunakannya):
-    { instruction: "mengekstrak data dari basis data", question: "", answer: "select" },
-    { instruction: "memperbarui data dalam basis data", question: "", answer: "update" },
-    { instruction: "menghapus data dari basis data", question: "", answer: "delete" },
-    { instruction: "memasukkan data baru ke dalam basis data", question: "", answer: "insert into" },
-    { instruction: "membuat basis data baru", question: "", answer: "create database" },
-    { instruction: "memodifikasi basis data", question: "", answer: "alter database" },
-    { instruction: "membuat tabel baru", question: "", answer: "create table" },
-    { instruction: "memodifikasi tabel", question: "", answer: "alter table" },
-    { instruction: "menghapus tabel", question: "", answer: "drop table" },
-    { instruction: "membuat indeks (search key)", question: "", answer: "create index" },
-    { instruction: "menghapus indeks", question: "", answer: "drop index" },
-    { instruction: "sintaks mengambil data dari tabel 'penjual'", question: "", answer: "select * from penjual" },
-    { instruction: "sintaks memilih kolom nama, umur, dan kota dari tabel 'penjual'", question: "", answer: "select nama,umur,kota from penjual" },
-    { instruction: "sintaks memilih nilai unik dari kolom umur & kota di tabel 'penjual'", question: "", answer: "select distinct umur,kota from penjual" },
-    { instruction: "sintaks menghitung jumlah nilai unik dari kolom kota di tabel 'penjual'", question: "", answer: "select count(distinct kota) from penjual" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom kota berisi tuban", question: "", answer: "select * from penjual where kota='tuban'" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur berisi 21", question: "", answer: "select * from penjual where umur=21" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dengan urutan kolom umur menaik", question: "", answer: "select * from penjual order by umur asc" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dengan urutan kolom umur menurun", question: "", answer: "select * from penjual order by umur desc" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dengan urutan menaik berdasarkan kolom umur & kota", question: "", answer: "select * from penjual order by umur,kota asc" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dengan urutan menaik berdasarkan kolom umur & menurun berdasarkan kolom kota", question: "", answer: "select * from penjual order by umur asc,kota desc" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur berisi 21 & kolom kota berisi tuban", question: "", answer: "select * from penjual where umur=21 and kota='tuban'" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur berisi 21 & kolom kota berisi tuban atau rembang", question: "", answer: "select * from penjual where umur=21 and (kota='tuban' or kota='rembang')" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' kecuali dengan kolom kota berisi tuban", question: "", answer: "select * from penjual where not kota='tuban'" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur tidak berisi 21 dan tidak berisi 22", question: "", answer: "select * from penjual where not umur=21 and not umur=22" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana isi kolom kota tidak diawali dengan huruf a", question: "", answer: "select * from penjual where kota not like 'a%'" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana isi kolom umur tidak berada di antara 10 dan 20", question: "", answer: "select * from penjual where umur not between 10 and 20" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' yang kolom kota bukan berasal dari tuban atau rembang", question: "", answer: "select * from penjual where kota not in ('tuban','rembang')" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur tidak lebih dari 30", question: "", answer: "select * from penjual where not umur > 30" },
-    { instruction: "sintaks mengambil data di tabel 'penjual' dimana kolom umur tidak kurang dari 30", question: "", answer: "select * from penjual where not umur < 30" },
-    // { instruction: "Lawan kata dari", question: "Panas", answer: "dingin" }
+    // --- PILAR 1: CREATE (INSERT) ---
+    { instruction: "Tuliskan sintaks utama untuk MEMASUKKAN data baru ke dalam tabel", question: "", answer: "insert into" },
+    { instruction: "Dalam perintah INSERT, kata kunci apa yang mendahului nilai-nilai yang akan dimasukkan?", question: "", answer: "values" },
+    { instruction: "Tulis kueri lengkap: Masukkan data 'Agus' ke kolom 'nama' di tabel 'karyawan'", question: "", answer: "insert into karyawan (nama) values ('agus')" },
+
+    // --- PILAR 2: READ (SELECT DASAR) ---
+    { instruction: "Tuliskan sintaks utama untuk MEMBACA atau mengambil data dari tabel", question: "", answer: "select" },
+    { instruction: "Karakter apa yang digunakan pada SELECT untuk mengambil SEMUA kolom dari tabel?", question: "", answer: "*" },
+    { instruction: "Tulis kueri lengkap: Ambil semua data dari tabel 'produk'", question: "", answer: "select * from produk" },
+    { instruction: "Tulis kueri lengkap: Ambil kolom 'judul' dan 'harga' dari tabel 'buku'", question: "", answer: "select judul, harga from buku" },
+
+    // --- PILAR 3: UPDATE ---
+    { instruction: "Tuliskan sintaks utama untuk MENGUBAH data yang sudah ada di tabel", question: "", answer: "update" },
+    { instruction: "Pada perintah UPDATE, kata kunci apa yang mendahului nama kolom dan nilai baru yang akan diset?", question: "", answer: "set" },
+    { instruction: "Tulis kueri lengkap: Ubah 'stok' menjadi 50 di tabel 'produk' dimana 'id' adalah 1", question: "", answer: "update produk set stok=50 where id=1" },
+
+    // --- PILAR 4: DELETE ---
+    { instruction: "Tuliskan sintaks utama untuk MENGHAPUS data dari tabel", question: "", answer: "delete" },
+    { instruction: "Pada perintah DELETE, kata kunci apa yang mendahului nama tabel?", question: "", answer: "from" },
+    { instruction: "Tulis kueri lengkap: Hapus data dari tabel 'karyawan' dimana 'status' adalah 'resign'", question: "", answer: "delete from karyawan where status='resign'" },
+
+    // --- KLAUSA WAJIB UNTUK UPDATE & DELETE ---
+    { instruction: "Klausa apa yang SANGAT WAJIB disertakan pada UPDATE dan DELETE agar tidak mengubah/menghapus seluruh tabel?", question: "", answer: "where" },
+
+    // --- KERANGKA MASTER SELECT (URUTAN) ---
+    { instruction: "Dalam kerangka SELECT, apa urutan KEDUA setelah menentukan nama kolom?", question: "", answer: "from" },
+    { instruction: "Dalam kerangka SELECT, klausa apa yang digunakan untuk MENYARING data berdasarkan kondisi tertentu?", question: "", answer: "where" },
+    { instruction: "Dalam kerangka SELECT, klausa apa yang digunakan untuk MENGELOMPOKKAN data (misal untuk dihitung)?", question: "", answer: "group by" },
+    { instruction: "Dalam kerangka SELECT, klausa apa yang digunakan untuk MENYARING data grup (setelah Group By)?", question: "", answer: "having" },
+    { instruction: "Dalam kerangka SELECT, klausa apa yang digunakan untuk MENGURUTKAN hasil (misal A-Z)?", question: "", answer: "order by" },
+    { instruction: "Dalam kerangka SELECT, klausa apa yang digunakan untuk MEMBATASI jumlah baris yang ditampilkan di bagian akhir kueri?", question: "", answer: "limit" },
+    
+    // --- LATIHAN GABUNGAN SEDERHANA ---
+    { instruction: "Tulis kueri: Ambil 'nama' dari 'karyawan', urutkan berdasarkan 'nama' dari A ke Z", question: "", answer: "select nama from karyawan order by nama asc" },
+    { instruction: "Tulis kueri: Ambil 5 data teratas dari tabel 'produk' urut harga dari termahal", question: "", answer: "select * from produk order by harga desc limit 5" }
 ];
 
-// Acak urutan pertanyaan
+// Acak urutan pertanyaan saat aplikasi dimuat
 shuffleArray(questions);
 
 const directionEl = document.getElementById("direction");
-const questionEl = document.getElementById("question");
 const answerInput = document.getElementById("answerInput");
 const messageEl = document.getElementById("message");
 const checkBtn = document.getElementById("checkBtn");
+const hintBtn = document.getElementById("hintBtn");
+const progressText = document.getElementById("progressText");
 
 let currentIndex = 0;
+let errorsOnCurrentQuestion = 0;
 
+// Fungsi untuk mengacak array (Fisher-Yates Shuffle)
 function shuffleArray(array){
     for(let i = array.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * (i + 1));
@@ -171,52 +235,95 @@ function shuffleArray(array){
     }
 }
 
+// Menghilangkan spasi ekstra untuk validasi yang lebih baik
+function normalizeSQL(str) {
+    return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
 function loadQuestion(){
     if(currentIndex >= questions.length){
-        directionEl.textContent = "";
-        questionEl.innerHTML = '<div class="finished">Semua pertanyaan selesai 🎉</div>';
+        directionEl.style.display = "none";
+        progressText.style.display = "none";
+        document.querySelector('.btn-group').style.display = "none";
         answerInput.style.display = "none";
-        checkBtn.style.display = "none";
-        messageEl.textContent = "";
+        
+        messageEl.innerHTML = '<div class="finished">Luar Biasa! 🎉<br>Anda telah menyelesaikan semua soal.</div>';
+        messageEl.className = "message";
+        messageEl.style.display = "block";
         return;
     }
 
     const current = questions[currentIndex];
     directionEl.textContent = current.instruction;
-    questionEl.textContent = current.question;
+    progressText.textContent = `Soal ${currentIndex + 1} dari ${questions.length}`;
     
     answerInput.value = "";
+    answerInput.focus();
+    messageEl.style.display = "none"; // Sembunyikan pesan saat soal baru
+    errorsOnCurrentQuestion = 0;
+}
+
+function showHint() {
+    const correctAnswer = questions[currentIndex].answer;
+    messageEl.textContent = `💡 Petunjuk: ${correctAnswer}`;
+    messageEl.className = "message";
+    messageEl.style.display = "block";
+    messageEl.style.color = "#d35400";
+    messageEl.style.backgroundColor = "#fdebd0";
     answerInput.focus();
 }
 
 function checkAnswer(){
-    const userAnswer = answerInput.value.trim().toLowerCase();
-    if(userAnswer === "") return;
+    const rawUserAnswer = answerInput.value;
+    if(rawUserAnswer.trim() === "") return;
 
-    const correctAnswer = questions[currentIndex].answer.trim().toLowerCase();
+    // Normalisasi jawaban: huruf kecil, hapus spasi berlebih, hapus titik koma di akhir jika ada
+    let userAnswer = normalizeSQL(rawUserAnswer);
+    if(userAnswer.endsWith(';')) {
+        userAnswer = userAnswer.slice(0, -1).trim();
+    }
+    
+    const correctAnswer = normalizeSQL(questions[currentIndex].answer);
 
     if(userAnswer === correctAnswer){
-        messageEl.textContent = "✓ Benar";
+        messageEl.textContent = "✓ Tepat Sekali!";
         messageEl.className = "message correct";
-        currentIndex++;
+        
+        // Nonaktifkan input sementara
+        answerInput.disabled = true;
+        checkBtn.disabled = true;
 
         setTimeout(() => {
-            messageEl.textContent = "";
+            answerInput.disabled = false;
+            checkBtn.disabled = false;
+            currentIndex++;
             loadQuestion();
-        }, 700);
+        }, 1000);
     } else {
-        messageEl.textContent = "✗ Salah, coba lagi";
+        errorsOnCurrentQuestion++;
+        messageEl.textContent = "✗ Sintaks kurang tepat, coba periksa kembali.";
         messageEl.className = "message wrong";
-        answerInput.select();
+        
+        // Berikan petunjuk otomatis jika salah 3 kali
+        if(errorsOnCurrentQuestion >= 3) {
+            setTimeout(showHint, 1500);
+        }
+        
+        answerInput.focus();
     }
 }
 
 checkBtn.addEventListener("click", checkAnswer);
+hintBtn.addEventListener("click", showHint);
+
 answerInput.addEventListener("keydown", function(e){
-    if(e.key === "Enter") checkAnswer();
+    if(e.key === "Enter") {
+        e.preventDefault(); // Mencegah form submission default
+        checkAnswer();
+    }
 });
 
-// Mulai permainan
+// Memulai aplikasi
 loadQuestion();
 </script>
 
